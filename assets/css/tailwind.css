@@ -1,6 +1,15 @@
 /* Fonts */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Inter:wght@100..900&display=swap');
+/* @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"); */
+@font-face {
+    font-display: swap;
+    font-family: "PP Supply Mono";
+    font-style: normal;
+    font-weight: 400;
+    src:
+        local("PPSupplySans-Regular"),
+        local("PPSupplySans-Regular"),
+        url("../fonts/pp-supply-mono/PPSupplySans-Regular.otf") format("otf");
+}
 
 @tailwind base;
 @tailwind components;
@@ -8,10 +17,6 @@
 
 @layer base {
     html {
-      font-family: "Inter", system-ui, sans-serif;
+        font-family: "PP Supply Mono", system-ui, sans-serif;
     }
-
-    span {
-      font-family: "Inconsolata", system-ui;
-    }
-  }
+}

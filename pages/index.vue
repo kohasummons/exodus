@@ -1,82 +1,30 @@
-<script setup>
-const pane = ref();
-
-onMounted(() => {
-    pane.value.addEventListener('mousedown', (e) => {
-        pane.value.classList.add('is-dragging');
-
-        let l = pane.value.offsetLeft;
-        let t = pane.value.offsetTop;
-
-        let startX = e.pageX;
-        let startY = e.pageY;
-
-        const drag = (e) => {
-            e.preventDefault();
-
-            pane.value.style.left = `${l + e.pageX - startX}px`;
-            pane.value.style.top = `${t + e.pageY - startY}px`;
-
-            // console.log({ x: pane.value.style.left, y:pane.value.style.top });
-        }
-
-        const mouseup = () => {
-            pane.value.classList.remove('is-dragging');
-
-            document.removeEventListener('mousemove', drag);
-            document.removeEventListener('mouseup', mouseup);
-        }
-
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('mouseup', mouseup);
-    });
-});
-</script>
-
+<script setup></script>
 <template>
-    <main class="relative flex flex-col items-center justify-center h-screen">
-        <div ref="pane" class="fixed w-10 h-10 bg-black cursor-grab flex items-center justify-center">
-            <p class="text-[#e6e6e6]"><span>+</span><span>_</span><span>+</span></p>
-        </div>
-        <section class="max-w-[600px] mx-auto flex flex-row items-center justify-center">
-            <div class="mx-auto md:w-full w-1/2">
-                <!-- <sphere /> -->
-                <p class="text-sm text-[#5f5f5f]"><a href="https://x.com/kohawithstuff">
-                    koha.wtf
-                </a></p>
-            </div>
-            <div class="absolute bottom-12 flex flex-col items-center">
-                
-            </div>
-        </section>
+    <main
+        class="relative h-[calc(100vh-16px)] border border-[#FAFAFA] bg-[#FFFFFF] rounded-xl"
+    >
+        <header class="flex items-start m-2 gap-1">
+            <div><NuxtLink to="/">koha.wtf</NuxtLink></div>
+            <div><NuxtLink to="/lab/media-pipe-from-hell">Lab</NuxtLink></div>
+            <div><span>🎮</span></div>
+        </header>
     </main>
 </template>
 <style>
-html {
-    @apply h-screen
+html,
+body {
+    @apply bg-[#F5F5F5] overscroll-none;
 }
 
-span {
-    font-weight: bold;
-    opacity: 0.7;
-    display: inline-block;
-    animation: pulse 0.5s alternate infinite ease-in-out;
+body {
+    @apply p-2;
 }
 
-span:nth-child(odd) {
-    animation-delay: 0.5s;
+header > div {
+    @apply text-grey-200 border border-grey-100 px-4 py-2 rounded;
 }
 
-
-@keyframes pulse {
-    to {
-        transform: scale(0.8);
-        opacity: 0.5;
-    }
-}
-
-.is-dragging {
-    background-color:rgb(16, 38, 235);
-    cursor: grabbing;
+header > div:last-child {
+    @apply text-inherit pl-3 rounded-br-[32px] rounded-tr-[32px];
 }
 </style>
