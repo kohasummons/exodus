@@ -4,9 +4,11 @@ import uselessWebsites from '~/assets/useless-websites.json'
 
 const isLoading = ref(false)
 const jsConfetti = ref<JSConfetti | null>(null)
+const isMobile = ref(false)
 
 onMounted(() => {
   jsConfetti.value = new JSConfetti()
+  isMobile.value = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 })
 const STORAGE_KEY = 'visited-useless-sites'
 
@@ -45,13 +47,21 @@ async function goToRandomSite() {
     confettiNumber: 30,
   })
   
-  // Fake delay for dramatic effect
-  await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 700))
+  // Skip delay on mobile (popup blockers don't like async before window.open)
+  if (!isMobile.value) {
+    await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 700))
+  }
   
   const site = getRandomUselessSite()
   markAsVisited(site.url)
   
-  window.open(site.url, '_blank')
+  // Mobile: navigate current tab. Desktop: new tab
+  if (isMobile.value) {
+    window.location.href = site.url
+  } else {
+    window.open(site.url, '_blank')
+  }
+  
   isLoading.value = false
 }
 </script>
