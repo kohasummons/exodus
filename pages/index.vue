@@ -1,349 +1,240 @@
-<script setup>
-useHead({
-    script: [
-        {
-            src: "https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js",
-            crossorigin: "anonymous",
-        },
-        {
-            src: "https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js",
-            crossorigin: "anonymous",
-        },
-        {
-            src: "https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js",
-            crossorigin: "anonymous",
-        },
-        {
-            src: "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js",
-            crossorigin: "anonymous",
-        },
-    ],
-});
+<script setup lang="ts">
+import JSConfetti from 'js-confetti'
+import uselessWebsites from '~/assets/useless-websites.json'
 
-// State variables
-const videoEl = ref(null);
-const canvasEl = ref(null);
+const isLoading = ref(false)
+const jsConfetti = ref<JSConfetti | null>(null)
 
-let webcamRunning = ref(false);
-let hands = null;
-let face = null;
-let camera = null;
-let canvasCtx = null;
-let isVideoHidden = ref(true);
+onMounted(() => {
+  jsConfetti.value = new JSConfetti()
+})
+const STORAGE_KEY = 'visited-useless-sites'
 
-// Initialize MediaPipe Hands when component is mounted
-onMounted(async () => {
-    try {
-        await initializeLayout();
-        await initWebcam();
-        await initMediaPipeHands();
-        await initMediaPipeFace();
-        startHandTracking();
-    } catch (error) {
-        console.error("Error initializing MediaPipe from hell:", error);
-    }
-});
-
-// Keep canvas size in sync with video display size
-function updateCanvasSize() {
-    if (canvasEl.value && videoEl.value) {
-        const rect = videoEl.value.getBoundingClientRect();
-        canvasEl.value.width = rect.width;
-        canvasEl.value.height = rect.height;
-    }
+function getVisitedSites(): string[] {
+  if (typeof window === 'undefined') return []
+  const stored = localStorage.getItem(STORAGE_KEY)
+  return stored ? JSON.parse(stored) : []
 }
 
-// Initialize and properly set element sizes
-function initializeLayout() {
-    updateCanvasSize();
-
-    // Update layout when window is resized
-    window.addEventListener('resize', () => {
-        updateCanvasSize();
-    });
+function markAsVisited(url: string) {
+  const visited = getVisitedSites()
+  if (!visited.includes(url)) {
+    visited.push(url)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(visited))
+  }
 }
 
-// Initialize webcam with constraints
-async function initWebcam() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-                width: { ideal: 1920 },
-                height: { ideal: 1080 },
-                facingMode: 'user'
-            }
-        });
-
-        if (videoEl.value) {
-            videoEl.value.srcObject = stream;
-
-            return new Promise((resolve) => {
-                videoEl.value.onloadedmetadata = () => {
-                    updateCanvasSize();
-                    resolve(videoEl.value);
-                };
-            });
-        }
-    } catch (error) {
-        console.error('Error accessing webcam:', error);
-        throw error;
-    }
+function getRandomUselessSite() {
+  const sites = uselessWebsites.uselessWebsites
+  const visited = getVisitedSites()
+  
+  // Prefer unvisited sites
+  const unvisited = sites.filter(s => !visited.includes(s.url))
+  const pool = unvisited.length > 0 ? unvisited : sites
+  
+  return pool[Math.floor(Math.random() * pool.length)]
 }
 
-// Initialize MediaPipe Hands
-async function initMediaPipeHands() {
-    hands = new Hands({
-        locateFile: (file) => {
-            return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-        }
-    });
-
-    hands.setOptions({
-        maxNumHands: 2,
-        modelComplexity: 1,
-        minDetectionConfidence: 0.7,
-        minTrackingConfidence: 0.7
-    });
-
-    await hands.initialize();
-    hands.onResults(onResults);
-
-    // Set up canvas context
-    if (canvasEl.value) {
-        canvasCtx = canvasEl.value.getContext("2d");
-    }
+async function goToRandomSite() {
+  isLoading.value = true
+  
+  // Sprinkle confetti on click
+  jsConfetti.value?.addConfetti({
+    emojis: ['🎉', '✨', '🎊', '🌈', '⭐'],
+    emojiSize: 40,
+    confettiNumber: 30,
+  })
+  
+  // Fake delay for dramatic effect
+  await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 700))
+  
+  const site = getRandomUselessSite()
+  markAsVisited(site.url)
+  
+  window.open(site.url, '_blank')
+  isLoading.value = false
 }
-
-// Initialize MediaPipe Face Landmarker
-async function initMediaPipeFace() {
-    face = new FaceMesh({
-        locateFile: (file) => {
-            return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
-        }
-    });
-
-    face.setOptions({
-        maxNumFaces: 1,
-        refineLandmarks: true,
-        minDetectionConfidence: 0.5,
-        minTrackingConfidence: 0.5
-    });
-
-    face.onResults(onFaceResults);
-}
-
-// Start hand tracking with camera
-function startHandTracking() {
-    if (!hands || !videoEl.value) return;
-
-    camera = new Camera(videoEl.value, {
-        onFrame: async () => {
-            await hands.send({ image: videoEl.value });
-        },
-        width: 1920,
-        height: 1080
-    });
-
-    camera.start();
-    webcamRunning.value = true;
-}
-
-
-// Draw hand landmarks with dynamic sizing and colors
-function drawLandmarks(landmarks, isLeft) {
-    if (!canvasCtx || !canvasEl.value || !videoEl.value) return;
-
-    // Get video display dimensions and actual video dimensions
-    const videoRect = videoEl.value.getBoundingClientRect();
-    const videoActualWidth = videoEl.value.videoWidth;
-    const videoActualHeight = videoEl.value.videoHeight;
-
-    // Calculate scaling factors for object-cover
-    const scaleX = videoRect.width / videoActualWidth;
-    const scaleY = videoRect.height / videoActualHeight;
-    const scale = Math.max(scaleX, scaleY);
-
-    // Calculate offset for centering (object-cover centers the video)
-    const scaledVideoWidth = videoActualWidth * scale;
-    const scaledVideoHeight = videoActualHeight * scale;
-    const offsetX = (videoRect.width - scaledVideoWidth) / 2;
-    const offsetY = (videoRect.height - scaledVideoHeight) / 2;
-
-    // Adjust line width and point size based on canvas dimension
-    const canvasSize = Math.min(canvasEl.value.width, canvasEl.value.height);
-    const lineWidth = Math.max(1, Math.min(1, canvasSize / 300));
-    const pointSize = Math.max(3, Math.min(10, canvasSize / 250));
-
-    // Define hand connections
-    const connections = [
-        [0, 1], [1, 2], [2, 3], [3, 4],
-        [0, 5], [5, 6], [6, 7], [7, 8],
-        [0, 9], [9, 10], [10, 11], [11, 12],
-        [0, 13], [13, 14], [14, 15], [15, 16],
-        [0, 17], [17, 18], [18, 19], [19, 20],
-        [0, 5], [5, 9], [9, 13], [13, 17]
-    ];
-
-    // Choose different color for each hand
-    const handColor = '#FF0000AD';
-
-    // Draw connections
-    canvasCtx.lineWidth = lineWidth;
-    canvasCtx.strokeStyle = handColor;
-
-    connections.forEach(([i, j]) => {
-        const start = landmarks[i];
-        const end = landmarks[j];
-
-        // Transform coordinates to match video display
-        const startX = offsetX + (start.x * scaledVideoWidth);
-        const startY = offsetY + (start.y * scaledVideoHeight);
-        const endX = offsetX + (end.x * scaledVideoWidth);
-        const endY = offsetY + (end.y * scaledVideoHeight);
-
-        canvasCtx.beginPath();
-        canvasCtx.moveTo(startX, startY);
-        canvasCtx.lineTo(endX, endY);
-        canvasCtx.stroke();
-    });
-
-    // Draw landmarks with special colors for fingertips
-    landmarks.forEach((landmark, index) => {
-        let pointColor = handColor;
-
-        // Transform coordinates to match video display
-        const x = offsetX + (landmark.x * scaledVideoWidth);
-        const y = offsetY + (landmark.y * scaledVideoHeight);
-
-        canvasCtx.fillStyle = pointColor;
-        canvasCtx.beginPath();
-        canvasCtx.arc(x, y, pointSize * 1.2, 0, 2 * Math.PI);
-        canvasCtx.fill();
-    });
-}
-
-function onFaceResults(results) {
-    if (!isVideoHidden.value || !canvasCtx || !canvasEl.value) return;
-
-    if (results.multiFaceLandmarks) {
-        for (const landmarks of results.multiFaceLandmarks) {
-            drawConnectors(canvasCtx, landmarks, FACEMESH_TESSELATION,
-                { color: '#C0C0C070', lineWidth: 1 });
-            drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYE, { color: '#000' });
-            drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYE, { color: '#000' });
-            drawConnectors(canvasCtx, landmarks, FACEMESH_FACE_OVAL, { color: '#E0E0E0' });
-            drawConnectors(canvasCtx, landmarks, FACEMESH_LIPS, { color: '#E0E0E0' });
-        }
-    }
-}
-
-// Process hand tracking results
-async function onResults(results) {
-    if (!canvasCtx || !canvasEl.value) return;
-
-    // Clear canvas
-    canvasCtx.clearRect(0, 0, canvasEl.value.width, canvasEl.value.height);
-
-    // Make sure canvas size matches video display
-    if (videoEl.value) {
-        const rect = videoEl.value.getBoundingClientRect();
-        if (canvasEl.value.width !== rect.width ||
-            canvasEl.value.height !== rect.height) {
-            updateCanvasSize();
-        }
-    }
-
-    // If video is hidden, process face landmarks
-    if (isVideoHidden.value && face && videoEl.value) {
-        await face.send({ image: videoEl.value });
-    }
-
-    // Process hand landmarks if detected
-    if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-        for (let handIndex = 0; handIndex < results.multiHandLandmarks.length; handIndex++) {
-            const landmarks = results.multiHandLandmarks[handIndex];
-            const handedness = results.multiHandedness[handIndex].label;
-            const isLeftHand = handedness === 'Left';
-
-            // Draw the hand landmarks
-            drawLandmarks(landmarks, isLeftHand);
-        }
-    }
-}
-
-// Check if webcam access is supported
-const hasGetUserMedia = () => !!navigator.mediaDevices?.getUserMedia;
-
-onUnmounted(() => {
-    webcamRunning.value = false;
-
-    if (camera) {
-        camera.stop();
-    }
-
-    if (videoEl.value && videoEl.value.srcObject) {
-        const tracks = videoEl.value.srcObject.getTracks();
-        tracks.forEach((track) => track.stop());
-    }
-
-    if (face) {
-        face.close();
-    }
-
-    window.removeEventListener('resize', updateCanvasSize);
-});
 </script>
-<template>
-    <main
-        class="relative h-[calc(100vh-16px)] border border-[#FAFAFA] bg-[#FFFFFF] rounded-xl flex flex-col justify-between">
-        <header class="flex items-start m-2 gap-1">
-            <div>
-                <NuxtLink to="/">koha.wtf</NuxtLink>
-            </div>
-            <div class="cursor-pointer">
-                <NuxtLink to="/lab/media-pipe-from-hell">Lab</NuxtLink>
-            </div>
-            <div><span>🎮</span></div>
-        </header>
-        <section class="absolute h-full w-full rounded-xl overflow-hidden">
-            <video ref="videoEl" :class="{ 'opacity-0': isVideoHidden }"
-                class="object-cover inset-0 w-full h-full transition-opacity duration-300" autoplay playsinline></video>
-            <canvas ref="canvasEl" class="w-full h-full"></canvas>
-        </section>
-    </main>
-</template>
-<style>
-html,
-body {
-    @apply bg-[#F5F5F5] overscroll-none;
+
+<style scoped>
+.icon-wrapper {
+  position: relative;
+  width: 1rem;
+  height: 1rem;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-body {
-    @apply p-2;
+.icon-default,
+.icon-hover {
+  position: absolute;
+  transition: transform 0.3s ease;
 }
 
-header {
-    @apply z-10;
+.icon-default {
+  transform: translateX(0);
 }
 
-header>div {
-    @apply text-grey-200 border border-grey-100 px-4 py-2 rounded;
+.icon-hover {
+  transform: translateY(-100%);
 }
 
-header>div:last-child {
-    @apply text-inherit pl-3 rounded-br-[32px] rounded-tr-[32px];
+.developer-pill:hover .icon-default {
+  transform: translateY(100%);
 }
 
-video,
-canvas {
-    z-index: 1;
-    position: absolute;
-    pointer-events: none;
-    transform: rotateY(180deg);
-    -webkit-transform: rotateY(180deg);
-    -moz-transform: rotateY(180deg);
-    top: 0;
-    left: 0;
-    transform: scaleX(-1);
+.developer-pill:hover .icon-hover {
+  transform: translateY(0);
+}
+
+.btn-useless {
+  background-color: #8b5cf6;
+  background-image: 
+    linear-gradient(
+      167deg, 
+      rgba(255, 255, 255, 0.1) 50%, 
+      rgba(0, 0, 0, 0) 55%
+    ),
+    linear-gradient(
+      to bottom, 
+      rgba(255, 255, 255, 0.15), 
+      rgba(0, 0, 0, 0)
+    );
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 1px #7c3aed inset,
+    0 0 0 2px rgba(255, 255, 255, 0.15) inset,
+    0 8px 0 0 #5b21b6,
+    0 8px 0 1px rgba(0, 0, 0, 0.4),
+    0 8px 8px 1px rgba(0, 0, 0, 0.5);
+  color: #FFF;
+  display: inline-block;
+  font-family: "Lucida Grande", Arial, sans-serif;
+  font-size: 22px;
+  font-weight: bold;
+  height: 61px;
+  letter-spacing: -1px;
+  line-height: 61px;
+  margin: 30px 0 10px;
+  position: relative;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+  text-decoration: none !important;
+  top: 0;
+  width: 186px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-useless:hover:not(:disabled) {
+  background-color: #7c3aed;
+  box-shadow: 
+    0 0 0 1px #7c3aed inset,
+    0 0 0 2px rgba(255, 255, 255, 0.15) inset,
+    0 10px 0 0 #4c1d95,
+    0 10px 0 1px rgba(0, 0, 0, 0.4),
+    0 10px 8px 1px rgba(0, 0, 0, 0.6);
+  top: -2px;
+}
+
+.btn-useless:active:not(:disabled) {
+  box-shadow: 
+    0 0 0 1px #5b21b6 inset,
+    0 0 0 2px rgba(255, 255, 255, 0.15) inset,
+    0 0 0 1px rgba(0, 0, 0, 0.4);
+  transform: translateY(10px);
+}
+
+.btn-useless:disabled {
+  cursor: wait;
+  opacity: 0.8;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle;
+}
+
+.btn-container {
+  position: relative;
+  display: inline-block;
+}
+
+.btn-useless {
+  position: relative;
+  z-index: 2;
+}
+
+.slide-up-text {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%) translateY(-100%);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.btn-container:hover .slide-up-text {
+  transform: translateX(-50%) translateY(8px);
 }
 </style>
+
+<template>
+  <div class="min-h-screen bg-[#131313] text-white">
+    <main class="mx-auto max-w-2xl px-6 py-16 lg:py-24">
+      <h1 class="text-[32px] font-semibold leading-tight tracking-tight">
+        Joshua Omobola
+      </h1>
+
+      <section class="mt-8 space-y-6 text-lg leading-[1.7]">
+        <p>
+          I'm a <a href="https://github.com/koha" class="underline decoration-white/40 underline-offset-2 hover:decoration-white">DevRel Engineer</a> and builder. 
+        </p>
+        <p>
+        I help <span class="developer-pill group inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-0.5 text-base cursor-pointer"><span class="icon-wrapper"><span class="icon-default">✦</span><span class="icon-hover">🫵🏼</span></span><span>developers</span></span> ship faster and tell better product stories. Over the years I've worked across developer experience, content, and community.
+        </p>
+        <p>
+          My work sits between engineering and education. I believe great developer tools deserve great developer experiences.
+        </p>
+        <p>
+          Recently, I'm tinkering at <NuxtLink to="/lab" class="underline decoration-white/40 underline-offset-2 hover:decoration-white">the attention factory</NuxtLink>.
+        </p>
+        <p>
+          <a href="mailto:me@koha.wtf" class="underline decoration-white/40 underline-offset-2 hover:decoration-white">Reach out</a> if interested. 
+        </p>
+      </section>
+      <section>
+      <div class="flex flex-wrap items-center">
+        <div class="btn-container group">
+          <button 
+            class="btn-useless" 
+            :disabled="isLoading"
+            @click="goToRandomSite"
+          >
+            <span v-if="isLoading" class="spinner"></span>
+            <span v-else>Suprise me!</span>
+          </button>
+          <span class="slide-up-text">teleport to a useless website</span>
+        </div>
+      </div>
+    </section>
+    </main>
+  </div>
+</template>

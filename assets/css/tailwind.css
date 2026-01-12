@@ -1,14 +1,42 @@
-/* Fonts */
-/* @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"); */
+/* SF Pro Display */
 @font-face {
+    font-family: "SF Pro Display";
+    font-style: normal;
+    font-weight: 300;
     font-display: swap;
-    font-family: "PP Supply Mono";
+    src: url("../fonts/sans-francisco/SF-Pro-Display-Light.otf") format("opentype");
+}
+
+@font-face {
+    font-family: "SF Pro Display";
+    font-style: italic;
+    font-weight: 300;
+    font-display: swap;
+    src: url("../fonts/sans-francisco/SF-Pro-Display-LightItalic.otf") format("opentype");
+}
+
+@font-face {
+    font-family: "SF Pro Display";
     font-style: normal;
     font-weight: 400;
-    src:
-        local("PPSupplySans-Regular"),
-        local("PPSupplySans-Regular"),
-        url("../fonts/pp-supply-mono/PPSupplySans-Regular.otf") format("otf");
+    font-display: swap;
+    src: url("../fonts/sans-francisco/SF-Pro-Display-Regular.otf") format("opentype");
+}
+
+@font-face {
+    font-family: "SF Pro Display";
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url("../fonts/sans-francisco/SF-Pro-Display-Medium.otf") format("opentype");
+}
+
+@font-face {
+    font-family: "SF Pro Display";
+    font-style: italic;
+    font-weight: 500;
+    font-display: swap;
+    src: url("../fonts/sans-francisco/SF-Pro-Display-MediumItalic.otf") format("opentype");
 }
 
 @tailwind base;
@@ -17,6 +45,6 @@
 
 @layer base {
     html {
-        font-family: "PP Supply Mono", system-ui, sans-serif;
+        font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     }
 }

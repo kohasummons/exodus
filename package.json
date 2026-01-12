@@ -12,6 +12,7 @@
   "dependencies": {
     "@nuxtjs/seo": "3.0.3",
     "howler": "^2.2.4",
+    "js-confetti": "^0.13.1",
     "nuxt-gtag": "3.0.2",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
