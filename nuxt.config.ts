@@ -9,6 +9,9 @@ export default defineNuxtConfig({
     },
   },
   modules: ["nuxt-gtag", "@nuxtjs/seo", "@nuxtjs/tailwindcss", "nuxt-og-image"],
+  ogImage: {
+    zeroRuntime: true,
+  },
   app: {
     head: {
       link: [
@@ -26,6 +29,8 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       autoSubfolderIndex: false,
+      crawlLinks: true,
+      routes: ["/", "/links"],
     },
   },
   site: {

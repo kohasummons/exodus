@@ -261,7 +261,7 @@ async function goToRandomSite() {
           </a>
         </div> -->
         <p>
-          Recently, I'm tinkering at <NuxtLink to="https://attentionfactory.io" class="developer-pill group inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-0.5 text-base no-underline hover:bg-white/15"><span class="icon-wrapper"><span class="icon-default">🧪</span><span class="icon-hover">🏭</span></span><span>the attention factory</span></NuxtLink>.
+          Recently, I'm tinkering at <NuxtLink to="https://attentionfactory.io/?utm_source=koha.wtf&utm_medium=referral&utm_campaign=personal-site" class="developer-pill group inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-0.5 text-base no-underline hover:bg-white/15"><span class="icon-wrapper"><span class="icon-default">🧪</span><span class="icon-hover">🏭</span></span><span>the attention factory</span></NuxtLink>.
         </p>
         <p>
           <a href="mailto:me@koha.wtf" class="underline decoration-white/40 underline-offset-2 hover:decoration-white">Reach out</a> if interested. 
