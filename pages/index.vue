@@ -2,6 +2,24 @@
 import JSConfetti from 'js-confetti'
 import uselessWebsites from '~/assets/useless-websites.json'
 
+defineOgImage({
+  component: 'Default',
+  props: {
+    name: 'Joshua Omobola',
+    bio: 'DevRel Engineer & AI Educator',
+  },
+})
+
+useSeoMeta({
+  title: 'Joshua Omobola',
+  ogTitle: 'Joshua Omobola',
+  description: 'DevRel Engineer & AI Educator',
+  ogDescription: 'DevRel Engineer & AI Educator',
+  twitterTitle: 'Joshua Omobola',
+  twitterDescription: 'DevRel Engineer & AI Educator',
+  twitterCard: 'summary_large_image',
+})
+
 const isLoading = ref(false)
 const jsConfetti = ref<JSConfetti | null>(null)
 const isMobile = ref(false)
@@ -206,12 +224,11 @@ async function goToRandomSite() {
   transform: translateX(-50%) translateY(8px);
 }
 </style>
-
 <template>
   <div class="min-h-screen bg-[#131313] text-white">
     <main class="mx-auto max-w-2xl px-6 py-16 lg:py-24">
       <h1 class="text-[32px] font-semibold leading-tight tracking-tight">
-        Joshua Omobola
+        Joshua Omobola*
       </h1>
 
       <section class="mt-8 space-y-6 text-lg leading-[1.7]">
@@ -268,3 +285,4 @@ async function goToRandomSite() {
     </main>
   </div>
 </template>
+
