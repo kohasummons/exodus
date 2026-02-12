@@ -31,7 +31,7 @@ const links = [
     icon: twoIcon,
   },
   {
-    href: 'https://koha.wtf',
+    href: 'https://nestuge.com/koha-ai-30mins',
     title: 'Book a 1:1 Call With Me',
     desc: 'Available to help you with your AI projects.',
     icon: oneIcon,

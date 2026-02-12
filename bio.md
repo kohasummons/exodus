@@ -80,31 +80,31 @@ Auto-detection via:
   "theme": "glass",
   "background": {
     "type": "image",
-    "src": "https://example.com/bg.jpg"
+    "src": "https://koha.wtf/bg.jpg"
   },
   "links": [
     {
       "title": "Get my free Prompt Bank",
       "description": "Ready-to-use prompts for AI",
-      "url": "https://gumroad.com/...",
+      "url": "https://joshuaomobola.gumroad.com/l/aios",
       "icon": "./public/icons/gumroad.png"
     },
     {
       "title": "Book a 1:1 Call",
       "description": "Let's chat about your project",
-      "url": "https://cal.com/...",
+      "url": "https://nestuge.com/koha-ai-30mins",
       "icon": "./public/icons/cal.png"
     }
   ],
   "socials": [
-    { "platform": "github", "url": "https://github.com/username" },
-    { "platform": "twitter", "url": "https://x.com/username" },
-    { "platform": "linkedin", "url": "https://linkedin.com/in/username" },
-    { "platform": "youtube", "url": "https://youtube.com/@username" }
+    { "platform": "github", "url": "https://github.com/kohasummons" },
+    { "platform": "twitter", "url": "https://x.com/kohawithstuff" },
+    { "platform": "linkedin", "url": "https://linkedin.com/in/kohasummons" },
+    { "platform": "youtube", "url": "https://youtube.com/@kohawithstuff" }
   ],
   "footer": {
     "text": "koha.wtf",
-    "url": "/"
+    "url": "https://koha.wtf"
   }
 }
 ```
