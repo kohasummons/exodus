@@ -24,9 +24,52 @@ const isLoading = ref(false)
 const jsConfetti = ref<JSConfetti | null>(null)
 const isMobile = ref(false)
 
+// Text rotator
+const audienceWords = [
+  'developers',
+  'creators',
+  'founders',
+  'students',
+  'curious minds',
+  'beginners',
+  'non-techies',
+  'side hustlers',
+  'you',
+  'everyone',
+  'learners',
+  'tinkerers',
+  'overthinkers',
+  'dreamers',
+]
+const currentWordIndex = ref(0)
+const currentWord = computed(() => audienceWords[currentWordIndex.value])
+const measurerRef = ref<HTMLElement | null>(null)
+const wrapperWidth = ref<string>('auto')
+let rotateInterval: ReturnType<typeof setInterval> | null = null
+
+function measureWord() {
+  nextTick(() => {
+    if (measurerRef.value) {
+      wrapperWidth.value = `${measurerRef.value.offsetWidth}px`
+    }
+  })
+}
+
+watch(currentWord, () => measureWord())
+
 onMounted(() => {
   jsConfetti.value = new JSConfetti()
   isMobile.value = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+
+  measureWord()
+
+  rotateInterval = setInterval(() => {
+    currentWordIndex.value = (currentWordIndex.value + 1) % audienceWords.length
+  }, 2400)
+})
+
+onUnmounted(() => {
+  if (rotateInterval) clearInterval(rotateInterval)
 })
 const STORAGE_KEY = 'visited-useless-sites'
 
@@ -223,6 +266,53 @@ async function goToRandomSite() {
 .btn-container:hover .slide-up-text {
   transform: translateX(-50%) translateY(8px);
 }
+
+/* Text rotator */
+.rotate-wrapper {
+  display: inline-flex;
+  position: relative;
+  overflow: hidden;
+  vertical-align: baseline;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rotate-measurer {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.rotate-inner {
+  display: inline-flex;
+  position: relative;
+}
+
+.rotate-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.rotate-enter-active,
+.rotate-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rotate-enter-from {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+.rotate-leave-to {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+.rotate-leave-active {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
 </style>
 <template>
   <div class="min-h-screen bg-[#131313] text-white">
@@ -233,11 +323,11 @@ async function goToRandomSite() {
 
       <section class="mt-8 space-y-6 text-lg leading-[1.7]">
         <p>
-          I'm a <a href="https://github.com/kohasummons" class="underline decoration-white/40 underline-offset-2 hover:decoration-white">DevRel Engineer</a> and builder. 
+          I'm an <a href="https://koha.wtf/links" class="underline decoration-white/40 underline-offset-2 hover:decoration-white">AI Educator</a>, <a href="https://github.com/kohasummons" class="underline decoration-white/40 underline-offset-2 hover:decoration-white"> Developer Advocate</a>, and builder. 
         </p>
         
         <p>
-        I help <span class="developer-pill group inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-0.5 text-base cursor-pointer"><span class="icon-wrapper"><span class="icon-default">✦</span><span class="icon-hover">🫵🏼</span></span><span>developers</span></span> ship faster and tell better product stories. Over the years I've worked across developer experience, content, and community.
+        I help <span class="developer-pill group inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-0.5 text-base cursor-pointer"><span class="icon-wrapper"><span class="icon-default">✦</span><span class="icon-hover">🫵🏼</span></span><span class="rotate-wrapper" :style="{ width: wrapperWidth }"><span ref="measurerRef" class="rotate-measurer" aria-hidden="true">{{ currentWord }}</span><TransitionGroup name="rotate" tag="span" class="rotate-inner"><span :key="currentWord" class="rotate-word">{{ currentWord }}</span></TransitionGroup></span></span> ship faster and tell better product stories. Over the years I've worked across developer experience, content, and community.
         </p>
         <p>
           My work sits between engineering and education. I believe great developer tools deserve great developer experiences.

@@ -37,7 +37,7 @@ const links = [
         </div>
 
         <h1 class="text-xl font-semibold">Joshua Omobola</h1>
-        <p class="mt-1 text-sm text-white/60">DevRel Engineer & Builder</p>
+        <p class="mt-1 text-sm text-white/60">AI Engineer ✦ Developer Advocate ✦ Builder</p>
 
         <!-- Social Icons -->
         <div class="mt-4 flex items-center gap-4">
