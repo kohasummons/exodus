@@ -152,7 +152,7 @@
   </template>
   
   <script setup>
-  import { ref, computed, onMounted, nextTick, watch } from 'vue'
+  import { ref, computed, onMounted, nextTick } from 'vue'
   
   /* ── THEME CONFIG ── */
   const THEMES = {
@@ -203,13 +203,21 @@
   const guiltHeart = ref(null)
   const btnNoRogue = ref(null)
   
+  /* ── ROUTE PARAMS (parsed before first render to avoid flash) ── */
+  const route = useRoute()
+  const paramFrom = route.query.from
+  const paramTo = route.query.to
+  const paramTheme = route.query.theme
+  const paramDone = route.query.done
+  const hasRecipient = !!(paramFrom && paramTo)
+
   /* ── STATE ── */
-  const currentTheme = ref('lemon')
-  const screen = ref('setup')
+  const currentTheme = ref(paramTheme && THEMES[paramTheme] ? paramTheme : 'lemon')
+  const screen = ref(hasRecipient ? (paramDone === '1' ? 'celeb' : 'question') : 'setup')
   const senderInput = ref('')
   const receiverInput = ref('')
-  const senderName = ref('')
-  const receiverName = ref('')
+  const senderName = ref(hasRecipient ? decodeURIComponent(paramFrom) : '')
+  const receiverName = ref(hasRecipient ? decodeURIComponent(paramTo) : '')
   const generatedURL = ref('')
   const linkGenerated = ref(false)
   
@@ -221,7 +229,7 @@
   const noButtonText = ref('No')
   const noButtonScale = ref(1)
   const noButtonOpacity = ref(1)
-  const bearEmoji = ref('🍋')
+  const bearEmoji = ref(THEMES[currentTheme.value].bearDefault)
   const desperateMsgText = ref('')
   const desperateMsgVisible = ref(false)
   const guiltCracking = ref(false)
@@ -525,7 +533,7 @@
     ctx.fillText("IT'S OFFICIAL ✓", W / 2, by + 7)
   
     ctx.fillStyle = '#999'; ctx.font = `16px ${isLemon ? 'Indie Flower' : 'Quicksand'}, sans-serif`
-    ctx.fillText(isLemon ? 'made with 🍋' : 'made with 💕', W / 2, H - 60)
+    ctx.fillText(isLemon ? 'made with koha.wtf/secret 🍋' : 'made with koha.wtf/secret 💕', W / 2, H - 60)
   
     const link = document.createElement('a')
     link.download = `valentine-${senderName.value}-${receiverName.value}.png`
