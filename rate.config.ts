@@ -11,7 +11,7 @@ export type ModeId = 'ugc' | 'social' | 'strategy'
 // Per-mode multipliers (1.0 = no change, 1.5 = 50% increase, 2.0 = double)
 export const multiplierByMode: Record<ModeId, number> = {
   social: 0.5,
-  ugc: 1.0,
+  ugc: 0.5,
   strategy: 1.0,
 }
 
@@ -147,7 +147,7 @@ const packagesConfigByMode: Record<
       highlight: true,
       best: 'Maximum reach & extended campaigns',
       features: [
-        '1 × Professional Video (YouTube + Shorts/Reels)',
+        '1 × Professional Video (Instagram + YouTube + Shorts/Reels)',
         'Cross-post to TikTok & X',
         '3 × Story slides (24-hour feature)',
         '30-day link in bio',
@@ -161,7 +161,7 @@ const packagesConfigByMode: Record<
       highlight: false,
       best: 'Focused video campaign',
       features: [
-        '1 × Professional Video (YouTube Short or Reel)',
+        '1 × Professional Video (Instagram / YouTube Short / Reel)',
         '2 × Story slides (24-hour feature)',
         '14-day link in bio',
         'Collaboration post feature',
@@ -174,7 +174,7 @@ const packagesConfigByMode: Record<
       highlight: false,
       best: 'Budget-conscious brands',
       features: [
-        '1 × Video (TikTok OR YouTube Short)',
+        '1 × Video (Instagram / TikTok / YouTube Short)',
         '7-day link in bio',
         'Collaboration post (optional)',
       ],
@@ -234,7 +234,8 @@ const alaCarteConfigByMode: Record<ModeId, { name: string; basePrice: number; cu
     { name: 'Vertical → Horizontal Re-edit', basePrice: 100 },
   ],
   social: [
-    { name: 'YouTube Video (standalone)', basePrice: 800 },
+    { name: 'Instagram Reel (standalone)', basePrice: 800 },
+    { name: 'YouTube Video (standalone)', basePrice: 700 },
     { name: 'TikTok/Short (standalone)', basePrice: 600 },
     { name: 'Story Feature (3–5 slides)', basePrice: 400 },
     { name: 'Link in Bio (7 days)', basePrice: 300 },
