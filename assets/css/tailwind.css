@@ -1,42 +1,47 @@
 /* SF Pro Display */
 @font-face {
-    font-family: "SF Pro Display";
-    font-style: normal;
-    font-weight: 300;
-    font-display: swap;
-    src: url("../fonts/sans-francisco/SF-Pro-Display-Light.otf") format("opentype");
+  font-family: "SF Pro Display";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("../fonts/sans-francisco/SF-Pro-Display-Light.otf")
+    format("opentype");
 }
 
 @font-face {
-    font-family: "SF Pro Display";
-    font-style: italic;
-    font-weight: 300;
-    font-display: swap;
-    src: url("../fonts/sans-francisco/SF-Pro-Display-LightItalic.otf") format("opentype");
+  font-family: "SF Pro Display";
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url("../fonts/sans-francisco/SF-Pro-Display-LightItalic.otf")
+    format("opentype");
 }
 
 @font-face {
-    font-family: "SF Pro Display";
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url("../fonts/sans-francisco/SF-Pro-Display-Regular.otf") format("opentype");
+  font-family: "SF Pro Display";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/sans-francisco/SF-Pro-Display-Regular.otf")
+    format("opentype");
 }
 
 @font-face {
-    font-family: "SF Pro Display";
-    font-style: normal;
-    font-weight: 500;
-    font-display: swap;
-    src: url("../fonts/sans-francisco/SF-Pro-Display-Medium.otf") format("opentype");
+  font-family: "SF Pro Display";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/sans-francisco/SF-Pro-Display-Medium.otf")
+    format("opentype");
 }
 
 @font-face {
-    font-family: "SF Pro Display";
-    font-style: italic;
-    font-weight: 500;
-    font-display: swap;
-    src: url("../fonts/sans-francisco/SF-Pro-Display-MediumItalic.otf") format("opentype");
+  font-family: "SF Pro Display";
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/sans-francisco/SF-Pro-Display-MediumItalic.otf")
+    format("opentype");
 }
 
 @tailwind base;
@@ -44,7 +49,17 @@
 @tailwind utilities;
 
 @layer base {
-    html {
-        font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    }
+  html {
+    font-family:
+      "SF Pro Display",
+      -apple-system,
+      BlinkMacSystemFont,
+      system-ui,
+      sans-serif;
+  }
+}
+
+::selection {
+  background: #facc14;
+  color: #131313;
 }

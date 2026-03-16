@@ -33,13 +33,13 @@ const links = [
   {
     href: 'https://nestuge.com/koha-ai-30mins',
     title: 'Book a 1:1 Call With Me',
-    desc: 'Available to help you with your AI projects.',
+    desc: 'Private call with me to discuss your AI strategy',
     icon: oneIcon,
   },
   {
     href: 'https://attentionfactory.io',
     title: 'Attention Factory*',
-    desc: 'Swiss Army Knife for Mordern Brands',
+    desc: 'The Creative AI Everything Partner',
     icon: threeIcon,
   }
 ]
