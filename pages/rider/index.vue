@@ -1,80 +1,125 @@
 <script setup lang="ts">
-import {
-  profile,
-  stats,
-  modes,
-  modeIntros,
-  packagesByMode,
-  alaCarteByMode,
-  addOnsByMode,
-  sectionVisibility,
-  timelineByMode,
-  includedFeatures,
-  type ModeId,
-} from '~/rate.config'
-
-const route = useRoute()
-const router = useRouter()
-
-// Map hash aliases to mode IDs
-const hashToMode: Record<string, ModeId> = {
-  ugc: 'ugc',
-  social: 'social',
-  post: 'social',
-  posts: 'social',
-  strategy: 'strategy',
-  coaching: 'strategy',
-  coach: 'strategy',
+const profile = {
+  name: 'Joshua Omobola',
+  alias: 'Koha',
+  role: 'DevRel Engineer & AI Educator',
+  shortBio:
+    'Joshua Omobola (Koha) is a DevRel Engineer and AI Educator helping developers, creators, and founders ship faster and tell better product stories.',
+  mediumBio:
+    'Joshua Omobola is an AI Educator, Developer Advocate, and founder of Attention Factory, helping brands and businesses integrate AI into their workflows. His background spans developer relations, product design, and community building across Web3Afrika, Mode Network, and DeepLearning.AI. He focuses on making AI and developer tools practical and accessible so teams can ship faster and tell better product stories.',
+  longBio:
+    'Joshua Omobola is an AI Educator, Developer Advocate, and Co-founder of Attention Factory, an AI education and consulting company helping brands and businesses integrate AI into their workflows. His work sits at the intersection of engineering and education, with a focus on making AI and developer tools practical and accessible. With a background spanning developer relations, product design, and community building, Joshua has worked across Web3Afrika and Mode Network, and is a DeepLearning.AI Ambassador. He is also the founder of TheDeverelCamp, a community focused on devrel professionals. Over the years, Joshua has built a reputation for helping developers ship faster and tell better product stories through events, educational content, and hands-on product support.',
+  focusAreas: ['Developer Experience', 'AI Education', 'Product Storytelling'],
+  formats: ['Keynotes', 'Workshops', 'Panels', 'Fireside Chats'],
+  audience: ['Developers', 'Creators', 'Founders', 'Students', 'Community Builders'],
+  topics: [
+    'Practical AI workflows for developers and creators',
+    'How to teach technical ideas without dumbing them down',
+    'Developer advocacy that actually drives product growth',
+    'From demo to adoption: better product storytelling',
+  ],
+  links: {
+    pressKit: 'https://koha.wtf/links',
+    website: 'https://koha.wtf',
+    x: 'https://x.com/kohawithstuff',
+    github: 'https://github.com/kohasummons',
+    linkedin: 'https://linkedin.com/in/kohasummons',
+    instagram: 'https://instagram.com/kohawithstuff',
+    youtube: 'https://youtube.com/@kohawithstuff',
+    email: 'mailto:collab@koha.wtf',
+  },
 }
 
-const getModeFromHash = (hash: string): ModeId => {
-  const clean = hash.replace('#', '').toLowerCase()
-  return hashToMode[clean] || 'social'
-}
+const bioModes = ['short', 'medium', 'long'] as const
+type BioMode = (typeof bioModes)[number]
+const activeBioMode = ref<BioMode>('medium')
 
-const activeMode = ref<ModeId>(getModeFromHash(route.hash))
-
-// Sync hash → activeMode
-watch(() => route.hash, (hash) => {
-  if (hash) activeMode.value = getModeFromHash(hash)
+const activeBio = computed(() => {
+  if (activeBioMode.value === 'short') return profile.shortBio
+  if (activeBioMode.value === 'medium') return profile.mediumBio
+  return profile.longBio
 })
 
-// Sync activeMode → hash
-watch(activeMode, (mode) => {
-  router.replace({ hash: `#${mode}` })
-})
+const feesCompensation = [
+  'I require an honorarium for all speaking engagements. Fees vary depending on event type, audience size, format, and preparation required.',
+  'Keynote / Talk (30-60 mins): Fee negotiable based on event scope.',
+  'Workshop / Hands-on Session (1-3 hours): Fee negotiable based on event scope.',
+  'Panel Participation: Fee negotiable based on event scope.',
+  'Moderation / Hosting: Fee negotiable based on event scope.',
+  "I'm open to adjusting fees for community-driven events, nonprofits, and events with a strong diversity and inclusion focus.",
+]
 
-const currentPackages = computed(() => packagesByMode[activeMode.value])
-const currentAlaCarte = computed(() => alaCarteByMode[activeMode.value])
-const currentAddOns = computed(() => addOnsByMode[activeMode.value])
-const currentIntro = computed(() => modeIntros[activeMode.value])
-const currentVisibility = computed(() => sectionVisibility[activeMode.value])
-const currentTimeline = computed(() => timelineByMode[activeMode.value])
+const paymentTerms = [
+  '50% deposit required before the event date to confirm the engagement.',
+  'Remaining 50% due within 7 days after the event.',
+  'Payment via transfer or any agreed-upon method.',
+  "Feel free to open conversations about this, I'm flexible.",
+]
+
+const travelAccommodation = [
+  'For events outside Lagos, Nigeria: round-trip economy (or above) flight booked and paid for by the organizer.',
+  'Hotel accommodation for the event duration, plus one night before and one night after when travel is required.',
+  'Airport transfers and local transportation to and from the venue.',
+  'Per diem for meals and incidentals when meals are not provided at the event.',
+  "Visa support: official invitation letter and required visa documents; visa fees covered by organizer.",
+  'For virtual events, no travel arrangements are needed, but the honorarium still applies.',
+]
+
+const technicalRequirements = [
+  'Working microphone (lapel/lavalier preferred).',
+  'Projector or screen that supports 16:9 format.',
+  'A clicker.',
+  'HDMI connection or adapter compatibility for my laptop.',
+  'Confidence monitor or timer visible from stage.',
+  'Stable internet connection if live demos are involved.',
+  'Access to the room at least 30 minutes before session for setup and sound check.',
+]
+
+const contentRecordingRights = [
+  'I retain full ownership of my slides, materials, and any original content I create for the engagement.',
+  'If the event will be recorded, I need to be informed in advance and approve the recording.',
+  "I grant organizers the right to use event recordings for promotional purposes, provided I'm credited and notified.",
+  'I reserve the right to share my own recordings or clips from the session on my platforms.',
+]
+
+const promotionVisibility = [
+  "Please include me in event marketing materials (website, social media, email campaigns) using my approved bio and headshot.",
+  'Please share promotional assets or hashtags in advance so I can amplify on my end.',
+  'If a partnership or sponsorship component involves Attention Factory, this should be discussed and agreed upon separately.',
+]
+
+const cancellationPolicy = [
+  'If the event is cancelled by the organizer, any deposits paid are non-refundable. Travel costs already incurred will be reimbursed.',
+  'If I need to cancel due to an emergency, I will provide as much notice as possible and work with the organizer to find a replacement or reschedule.',
+  'Cancellations by either party should be communicated at least 14 days before the event date.',
+]
 
 defineOgImage({
   component: 'Bio',
   props: {
     name: profile.name,
-    bio: 'Rate Card & Collaboration',
+    bio: 'Speaker Rider + Press Kit',
   },
 })
 
 useSeoMeta({
-  title: `Rate Card | ${profile.name}`,
-  description: 'Collaboration & Partnership Opportunities',
-  ogTitle: `Rate Card | ${profile.name}`,
-  ogDescription: 'Collaboration & Partnership Opportunities',
-  twitterTitle: `Rate Card | ${profile.name}`,
-  twitterDescription: 'Collaboration & Partnership Opportunities',
+  title: `${profile.name} | Speaker Rider + Press Kit`,
+  description:
+    'Speaker rider and press kit for Joshua Omobola (Koha): bio, topics, audience fit, and event requirements.',
+  ogTitle: `${profile.name} | Speaker Rider + Press Kit`,
+  ogDescription:
+    'Speaker rider and press kit for Joshua Omobola (Koha): bio, topics, audience fit, and event requirements.',
+  twitterTitle: `${profile.name} | Speaker Rider + Press Kit`,
+  twitterDescription:
+    'Speaker rider and press kit for Joshua Omobola (Koha): bio, topics, audience fit, and event requirements.',
   twitterCard: 'summary_large_image',
-  twitterCreator: profile.twitter,
-  twitterSite: profile.twitter,
+  twitterCreator: '@kohawithstuff',
+  twitterSite: '@kohawithstuff',
 })
 </script>
 
 <template>
-  <div class="min-h-screen flex justify-center p-6 py-12 font-sans relative max-sm:p-0">
-    <!-- Fixed background -->
+  <div class="min-h-screen flex justify-center p-6 py-10 font-sans relative max-sm:p-0">
     <div class="fixed inset-0 z-0 pointer-events-none">
       <img
         src="https://framerusercontent.com/images/mtxquOUwbPjOKdEoG496Zv8CEs.jpg"
@@ -83,240 +128,264 @@ useSeoMeta({
       />
     </div>
 
-    <div
-      class="relative z-10 w-full max-w-[720px] h-fit bg-[rgba(13,13,13,0.9)] backdrop-blur-[50px] rounded-3xl p-12 flex flex-col items-center gap-6 max-sm:max-w-full max-sm:px-5 max-sm:py-10 max-sm:rounded-none overflow-hidden"
+    <main
+      class="relative z-10 w-full max-w-[860px] bg-[rgba(13,13,13,0.9)] backdrop-blur-[40px] rounded-3xl p-10 max-sm:max-w-full max-sm:px-5 max-sm:py-8 max-sm:rounded-none text-white"
     >
-      <!-- Floating Tag -->
-      <a
-        href="https://attentionfactory.io"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="absolute top-4 right-4 bg-white/5 border border-white/10 text-white/40 text-[9px] uppercase tracking-wider font-medium px-2 py-1 rounded-full hover:bg-white/10 hover:text-white/60 hover:border-white/20 transition-all duration-300 no-underline flex items-center gap-1 max-sm:top-3 max-sm:right-3"
-      >
-        Attention Factory
-        <span class="text-[8px]">↗</span>
-      </a>
-
-      <!-- Header -->
-      <div class="flex flex-col items-center gap-3">
-        <img src="~/assets/images/shot.png" :alt="profile.name" class="w-24 h-24 rounded-full object-cover grayscale" />
-        <h1 class="text-3xl font-bold text-white m-0 flex items-center gap-2 max-sm:text-2xl">
-          {{ profile.name }}
-          <img src="~/assets/icons/check.svg" alt="Verified" class="w-6 h-6 shrink-0" />
-        </h1>
-        <p class="text-white/50 text-sm tracking-widest uppercase">{{ profile.subtitle }}</p>
-      </div>
-
-      <!-- Stats Grid -->
-      <div class="w-full grid grid-cols-2 gap-3 max-sm:grid-cols-1">
-        <div v-for="stat in stats" :key="stat.label" class="bg-white/5 rounded-xl p-4 flex flex-col gap-1">
-          <span class="text-white/40 text-xs uppercase tracking-wider">{{ stat.label }}</span>
-          <span class="text-white font-semibold text-sm">{{ stat.value }}</span>
-        </div>
-      </div>
-
-      <!-- Divider -->
-      <div class="w-full h-px bg-white/10"></div>
-
-      <!-- Mode Tabs -->
-      <div class="w-full flex gap-2">
-        <button
-          v-for="mode in modes"
-          :key="mode.id"
-          :class="[
-            'flex-1 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
-            activeMode === mode.id
-              ? 'bg-white text-black'
-              : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/80',
-          ]"
-          @click="activeMode = mode.id"
+      <header class="flex flex-col gap-4">
+        <p class="text-[11px] uppercase tracking-[0.2em] text-white/50">Speaker Rider + Press Kit</p>
+        <a
+          href="https://standing-swallow-78c.notion.site/Joshua-Speaker-Rider-324ab15ddf728063b85ccd34f606b6b4"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-4xl leading-tight font-bold max-sm:text-3xl text-white no-underline hover:text-white/85 transition"
         >
-          {{ mode.label }}
-        </button>
-      </div>
+          {{ profile.name }}
+        </a>
+        <p class="text-white/80">{{ profile.alias }} · {{ profile.role }}</p>
+        <p class="text-white/70 leading-relaxed max-w-[75ch]">{{ profile.shortBio }}</p>
+      </header>
 
-      <!-- Mode Intro -->
-      <p class="text-white/50 text-sm leading-relaxed text-center max-w-lg">
-        {{ currentIntro }}
-      </p>
+      <div class="w-full h-px bg-white/10 my-7"></div>
 
-      <!-- Divider -->
-      <div class="w-full h-px bg-white/10"></div>
-
-      <!-- Packages Section -->
-      <div class="w-full flex flex-col gap-4">
-        <h2 class="text-white/60 text-xs uppercase tracking-widest font-medium">Collaboration Packages</h2>
-
-        <div class="flex flex-col gap-3">
-          <div
-            v-for="pkg in currentPackages"
-            :key="pkg.name"
-            :class="[
-              'rounded-xl p-5 flex flex-col gap-3 transition-all duration-300',
-              pkg.highlight ? 'bg-gradient-to-br from-white/15 to-white/5 ring-1 ring-white/20' : 'bg-white/5',
-            ]"
-          >
-            <div class="flex items-start justify-between gap-4">
-              <div class="flex flex-col gap-1">
-                <div class="flex items-center gap-2">
-                  <span class="text-white font-semibold">{{ pkg.name }}</span>
-                  <span
-                    v-if="pkg.highlight"
-                    class="text-[10px] uppercase tracking-wider bg-white/20 text-white/80 px-2 py-0.5 rounded-full"
-                    >Popular</span
-                  >
-                </div>
-                <span class="text-white/40 text-xs">{{ pkg.best }}</span>
-              </div>
-              <span class="text-white text-2xl font-bold whitespace-nowrap">{{ pkg.price }}</span>
-            </div>
-            <ul class="flex flex-col gap-1.5 m-0 p-0 list-none">
-              <li v-for="feature in pkg.features" :key="feature" class="text-white/60 text-sm flex items-start gap-2">
-                <span class="text-white/30 mt-0.5">✦</span>
-                {{ feature }}
-              </li>
-            </ul>
+      <section class="grid md:grid-cols-3 gap-4">
+        <article class="md:col-span-2 bg-white/5 rounded-2xl p-5">
+          <h2 class="text-xs uppercase tracking-widest text-white/60 mb-3">Official Bio</h2>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <button
+              v-for="mode in bioModes"
+              :key="mode"
+              type="button"
+              :class="activeBioMode === mode ? 'chip-active' : 'chip-button'"
+              @click="activeBioMode = mode"
+            >
+              {{ mode }}
+            </button>
           </div>
-        </div>
-      </div>
+          <p class="text-sm leading-relaxed text-white/75">{{ activeBio }}</p>
+        </article>
 
-      <!-- Divider -->
-      <div v-if="currentVisibility.alaCarte || currentVisibility.addOns" class="w-full h-px bg-white/10"></div>
-
-      <!-- A La Carte Section -->
-      <div v-if="currentVisibility.alaCarte" class="w-full flex flex-col gap-4">
-        <h2 class="text-white/60 text-xs uppercase tracking-widest font-medium">A La Carte</h2>
-
-        <div class="flex flex-col gap-2">
-          <div
-            v-for="item in currentAlaCarte"
-            :key="item.name"
-            class="flex items-center justify-between py-2.5 px-4 bg-white/5 rounded-lg"
-          >
-            <span class="text-white/70 text-sm">{{ item.name }}</span>
-            <span class="text-white font-medium text-sm">{{ item.price }}</span>
+        <article class="bg-white/5 rounded-2xl p-5">
+          <h2 class="text-xs uppercase tracking-widest text-white/60 mb-3">Focus</h2>
+          <div class="flex flex-wrap gap-2">
+            <span
+              v-for="item in profile.focusAreas"
+              :key="item"
+              class="text-xs text-white/80 py-1.5 px-3 bg-white/10 rounded-full"
+            >
+              {{ item }}
+            </span>
           </div>
-        </div>
-      </div>
+        </article>
+      </section>
 
-      <!-- Add-ons Section -->
-      <div v-if="currentVisibility.addOns" class="w-full flex flex-col gap-4">
-        <h2 class="text-white/60 text-xs uppercase tracking-widest font-medium">Add-Ons</h2>
-
-        <div class="flex flex-wrap gap-2">
-          <div
-            v-for="addon in currentAddOns"
-            :key="addon.name"
-            class="flex items-center gap-2 py-2 px-3 bg-white/5 rounded-lg text-sm"
-          >
-            <span class="text-white/50">{{ addon.name }}</span>
-            <span class="text-white/80 font-medium">{{ addon.price }}</span>
+      <section class="grid md:grid-cols-2 gap-4 mt-4">
+        <article class="bg-white/5 rounded-2xl p-5">
+          <h2 class="text-xs uppercase tracking-widest text-white/60 mb-3">Speaking Topics</h2>
+          <div class="w-full h-[300px] rounded-xl overflow-hidden border border-white/10 bg-white/5">
+            <img
+              src="~/assets/images/headshot.png"
+              alt="Joshua Omobola speaking topics visual"
+              class="w-full h-full object-cover object-top"
+            />
           </div>
-        </div>
-      </div>
-
-      <!-- Divider -->
-      <div v-if="currentVisibility.included" class="w-full h-px bg-white/10"></div>
-
-      <!-- What's Included -->
-      <div v-if="currentVisibility.included" class="w-full flex flex-col gap-3">
-        <h2 class="text-white/60 text-xs uppercase tracking-widest font-medium">What's Included (All Packages)</h2>
-        <div class="flex flex-wrap gap-2">
-          <span
-            v-for="item in includedFeatures"
-            :key="item"
-            class="text-white/50 text-xs py-1.5 px-3 bg-white/5 rounded-full"
-          >
-            {{ item }}
-          </span>
-        </div>
-      </div>
-
-      <!-- Timeline -->
-      <div v-if="currentTimeline" class="w-full grid gap-3" :class="currentTimeline.rush ? 'grid-cols-2' : 'grid-cols-1'">
-        <div class="bg-white/5 rounded-xl p-4 flex flex-col gap-1">
-          <span class="text-white/40 text-xs uppercase tracking-wider">Standard Delivery</span>
-          <span class="text-white font-semibold text-sm">{{ currentTimeline.standard }}</span>
-        </div>
-        <div v-if="currentTimeline.rush" class="bg-white/5 rounded-xl p-4 flex flex-col gap-1">
-          <span class="text-white/40 text-xs uppercase tracking-wider">Rush Delivery</span>
-          <span class="text-white font-semibold text-sm">{{ currentTimeline.rush.time }} ({{ currentTimeline.rush.price }})</span>
-        </div>
-      </div>
-
-      <!-- Divider -->
-      <div class="w-full h-px bg-white/10"></div>
-
-      <!-- Contact -->
-      <div class="w-full flex flex-col gap-4 items-center">
-        <h2 class="text-white/60 text-xs uppercase tracking-widest font-medium">Let's Work Together</h2>
-
-        <div class="flex flex-wrap gap-3 justify-center">
           <a
-            :href="`mailto:${profile.email}`"
-            class="flex items-center gap-2 py-2.5 px-4 bg-white/10 hover:bg-white/15 rounded-xl text-white/80 text-sm no-underline transition-all duration-300"
+            href="/images/headshot.png"
+            download="joshua-omobola-headshot.png"
+            class="inline-flex items-center gap-2 mt-3 text-xs uppercase tracking-wider px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white/85 no-underline transition"
           >
-            <span>✉</span>
-            {{ profile.email }}
+            Download Image
           </a>
+        </article>
+
+        <article class="bg-white/5 rounded-2xl p-5">
+          <h2 class="text-xs uppercase tracking-widest text-white/60 mb-3">Formats + Audience</h2>
+          <p class="text-[11px] uppercase tracking-wider text-white/45 mb-2">Formats</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span v-for="format in profile.formats" :key="format" class="chip">{{ format }}</span>
+          </div>
+          <p class="text-[11px] uppercase tracking-wider text-white/45 mb-2">Best Fit Audience</p>
+          <div class="flex flex-wrap gap-2">
+            <span v-for="segment in profile.audience" :key="segment" class="chip">{{ segment }}</span>
+          </div>
+        </article>
+      </section>
+
+      <div class="w-full h-px bg-white/10 my-7"></div>
+
+      <section class="grid md:grid-cols-2 gap-4">
+        <article class="bg-white/5 rounded-2xl p-5">
+          <h2 class="text-xs uppercase tracking-widest text-white/60 mb-3">Fees & Compensation</h2>
+          <ul class="space-y-2">
+            <li v-for="item in feesCompensation" :key="item" class="text-sm text-white/75 flex items-start gap-2">
+              <span class="text-white/35">-</span>
+              <span>{{ item }}</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="bg-white/5 rounded-2xl p-5">
+          <h2 class="text-xs uppercase tracking-widest text-white/60 mb-3">Payment Terms</h2>
+          <ul class="space-y-2">
+            <li v-for="item in paymentTerms" :key="item" class="text-sm text-white/75 flex items-start gap-2">
+              <span class="text-white/35">-</span>
+              <span>{{ item }}</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="bg-white/5 rounded-2xl p-5">
+          <h2 class="text-xs uppercase tracking-widest text-white/60 mb-3">Travel & Accommodation</h2>
+          <ul class="space-y-2">
+            <li v-for="item in travelAccommodation" :key="item" class="text-sm text-white/75 flex items-start gap-2">
+              <span class="text-white/35">-</span>
+              <span>{{ item }}</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="bg-white/5 rounded-2xl p-5">
+          <h2 class="text-xs uppercase tracking-widest text-white/60 mb-3">Technical Requirements</h2>
+          <ul class="space-y-2">
+            <li v-for="item in technicalRequirements" :key="item" class="text-sm text-white/75 flex items-start gap-2">
+              <span class="text-white/35">-</span>
+              <span>{{ item }}</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="bg-white/5 rounded-2xl p-5">
+          <h2 class="text-xs uppercase tracking-widest text-white/60 mb-3">Content & Recording Rights</h2>
+          <ul class="space-y-2">
+            <li v-for="item in contentRecordingRights" :key="item" class="text-sm text-white/75 flex items-start gap-2">
+              <span class="text-white/35">-</span>
+              <span>{{ item }}</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="bg-white/5 rounded-2xl p-5">
+          <h2 class="text-xs uppercase tracking-widest text-white/60 mb-3">Promotion & Visibility</h2>
+          <ul class="space-y-2">
+            <li v-for="item in promotionVisibility" :key="item" class="text-sm text-white/75 flex items-start gap-2">
+              <span class="text-white/35">-</span>
+              <span>{{ item }}</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="bg-white/5 rounded-2xl p-5">
+          <h2 class="text-xs uppercase tracking-widest text-white/60 mb-3">Diversity & Inclusion</h2>
+          <p class="text-sm text-white/75 leading-relaxed">
+            I care about who I share a stage with. I expect the event to make genuine efforts toward a diverse and
+            inclusive lineup of speakers. I may decline engagements where the lineup does not reflect this.
+          </p>
+        </article>
+
+        <article class="bg-white/5 rounded-2xl p-5">
+          <h2 class="text-xs uppercase tracking-widest text-white/60 mb-3">Cancellation Policy</h2>
+          <ul class="space-y-2">
+            <li v-for="item in cancellationPolicy" :key="item" class="text-sm text-white/75 flex items-start gap-2">
+              <span class="text-white/35">-</span>
+              <span>{{ item }}</span>
+            </li>
+          </ul>
+        </article>
+      </section>
+
+      <div class="w-full h-px bg-white/10 my-7"></div>
+
+      <section class="grid md:grid-cols-2 gap-4">
+        <article class="bg-white/5 rounded-2xl p-5">
+          <h2 class="text-xs uppercase tracking-widest text-white/60 mb-3">Press + Assets</h2>
+          <p class="text-sm text-white/75 leading-relaxed mb-3">
+            If these terms work for you, I'd love to move forward. Reach out and let's make it happen.
+          </p>
           <a
-            :href="profile.twitterUrl"
+            :href="profile.links.pressKit"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center gap-2 py-2.5 px-4 bg-white/10 hover:bg-white/15 rounded-xl text-white/80 text-sm no-underline transition-all duration-300"
+            class="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white/85 no-underline transition"
           >
-            <img src="~/assets/icons/x_dark.svg" alt="X" class="w-4 h-4 opacity-80" />
-            {{ profile.twitter }}
+            Open Koha Links
+            <span>-></span>
           </a>
-          <a
-            :href="profile.tiktokUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="flex items-center gap-2 py-2.5 px-4 bg-white/10 hover:bg-white/15 rounded-xl text-white/80 text-sm no-underline transition-all duration-300"
-          >
-            <img src="~/assets/icons/tiktok-icon-dark.svg" alt="TikTok" class="w-4 h-4 opacity-80" />
-            {{ profile.tiktok }}
-          </a>
-          <a
-            :href="profile.instagramUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="flex items-center gap-2 py-2.5 px-4 bg-white/10 hover:bg-white/15 rounded-xl text-white/80 text-sm no-underline transition-all duration-300"
-          >
-          <img src="~/assets/icons/instagram.svg" alt="Instagram" class="w-4 h-4 opacity-80" />
-            {{ profile.instagram }}
-          </a>
-          <a
-            :href="profile.linkedinUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="flex items-center gap-2 py-2.5 px-4 bg-white/10 hover:bg-white/15 rounded-xl text-white/80 text-sm no-underline transition-all duration-300"
-          >
-            <img src="~/assets/icons/linkedin.svg" alt="LinkedIn" class="w-4 h-4 opacity-80" />
-            {{ profile.linkedin }}
-          </a>
-        </div>
+        </article>
 
-        <p class="text-white/30 text-xs text-center">Rates effective January 2026. All prices in USD.</p>
-      </div>
+        <article class="bg-white/5 rounded-2xl p-5">
+          <h2 class="text-xs uppercase tracking-widest text-white/60 mb-3">Booking Contact</h2>
+          <div class="flex flex-wrap gap-2 mb-3">
+            <a href="mailto:omobolathejoshua@gmail.com" class="chip-link">Primary Email</a>
+            <a :href="profile.links.email" class="chip-link">Collab Email</a>
+            <a :href="profile.links.x" target="_blank" rel="noopener noreferrer" class="chip-link">X</a>
+            <a :href="profile.links.linkedin" target="_blank" rel="noopener noreferrer" class="chip-link">LinkedIn</a>
+            <a :href="profile.links.github" target="_blank" rel="noopener noreferrer" class="chip-link">GitHub</a>
+            <a :href="profile.links.instagram" target="_blank" rel="noopener noreferrer" class="chip-link">Instagram</a>
+            <a :href="profile.links.youtube" target="_blank" rel="noopener noreferrer" class="chip-link">YouTube</a>
+          </div>
+          <p class="text-sm text-white/70">
+            Website: koha.wtf · Company: Attention Factory
+          </p>
+        </article>
+      </section>
 
-      <!-- Home link -->
-      <NuxtLink
-        to="/links"
-        class="text-white/30 text-sm hover:text-white/60 transition-colors mt-2 focus-visible:outline-none focus-visible:text-white/60 focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-sm"
-      >
-        <span class="text-white/30">✦</span> Back to Links <span class="text-white/30">✦</span>
-      </NuxtLink>
-    </div>
+      <footer class="mt-8 pt-4 border-t border-white/10 flex items-center justify-between max-sm:flex-col max-sm:items-start gap-2">
+        <NuxtLink to="/links" class="text-sm text-white/45 hover:text-white/70 no-underline transition">
+          - Back to Links
+        </NuxtLink>
+        <p class="text-[11px] text-white/35">Updated March 2026</p>
+      </footer>
+    </main>
   </div>
 </template>
 
 <style scoped>
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+.chip {
+  font-size: 0.75rem;
+  color: rgb(255 255 255 / 0.8);
+  padding: 0.375rem 0.75rem;
+  background: rgb(255 255 255 / 0.1);
+  border-radius: 9999px;
 }
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+.chip-link {
+  font-size: 0.75rem;
+  color: rgb(255 255 255 / 0.9);
+  padding: 0.375rem 0.75rem;
+  background: rgb(255 255 255 / 0.1);
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.chip-link:hover {
+  background: rgb(255 255 255 / 0.16);
+}
+
+.chip-button {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgb(255 255 255 / 0.75);
+  padding: 0.35rem 0.7rem;
+  background: rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+
+.chip-button:hover {
+  color: rgb(255 255 255 / 0.9);
+  background: rgb(255 255 255 / 0.12);
+}
+
+.chip-active {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #111827;
+  padding: 0.35rem 0.7rem;
+  background: rgb(255 255 255 / 0.95);
+  border: 1px solid rgb(255 255 255 / 0.95);
+  border-radius: 9999px;
 }
 </style>
