@@ -10,7 +10,7 @@ export type ModeId = 'ugc' | 'social' | 'strategy'
 
 // Per-mode multipliers (1.0 = no change, 1.5 = 50% increase, 2.0 = double)
 export const multiplierByMode: Record<ModeId, number> = {
-  social: 0.5,
+  social: 0.78,
   ugc: 0.5,
   strategy: 1.0,
 }
